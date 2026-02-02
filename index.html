@@ -26,11 +26,6 @@
       margin-bottom: 40px;
     }
 
-    .buttons {
-      display: inline-block; /* keeps buttons together initially */
-      position: relative;
-    }
-
     button {
       padding: 15px 40px;
       font-size: 1.2rem;
@@ -43,18 +38,16 @@
       background-color: #4caf50;
       color: white;
       margin-right: 20px;
-      position: relative; /* stays fixed relative to container */
-      z-index: 1; /* ensures it stays on top visually */
     }
 
     #no {
       background-color: #f44336;
       color: white;
-      position: relative; /* start next to Yes */
+      position: fixed;
       transition: left 0.35s ease, top 0.35s ease;
-      z-index: 2; /* above yes only when moving */
     }
 
+    /* Second screen */
     .success {
       display: none;
       font-size: 4rem;
@@ -78,10 +71,8 @@
 <body>
   <div class="container" id="question">
     <h1>Will you be my Valentine?</h1>
-    <div class="buttons">
-      <button id="yes">Yes</button>
-      <button id="no">No</button>
-    </div>
+    <button id="yes">Yes</button>
+    <button id="no">No</button>
   </div>
 
   <div class="success" id="success">
@@ -94,36 +85,23 @@
     const question = document.getElementById("question");
     const success = document.getElementById("success");
 
-    // Function to get a random position for No button
-    function getRandomPosition(button) {
+    function moveButton() {
       const padding = 20;
-      const maxX = window.innerWidth - button.offsetWidth - padding;
-      const maxY = window.innerHeight - button.offsetHeight - padding;
+      const maxX = window.innerWidth - noButton.offsetWidth - padding;
+      const maxY = window.innerHeight - noButton.offsetHeight - padding;
+
       const randomX = Math.random() * maxX;
       const randomY = Math.random() * maxY;
-      return { x: randomX, y: randomY };
+
+      noButton.style.left = randomX + "px";
+      noButton.style.top = randomY + "px";
     }
 
-    // Move the No button somewhere random
-    function moveNoButton() {
-      const { x, y } = getRandomPosition(noButton);
-      noButton.style.position = "fixed"; // switch to fixed when moving
-      noButton.style.left = x + "px";
-      noButton.style.top = y + "px";
-    }
+    noButton.addEventListener("mouseenter", moveButton);
 
-    // Move away on hover
-    noButton.addEventListener("mouseenter", moveNoButton);
-
-    // Teleport if clicked
-    noButton.addEventListener("click", (e) => {
-      e.preventDefault();
-      moveNoButton();
-    });
-
-    // Yes button logic (never moves)
     yesButton.addEventListener("click", () => {
       question.style.opacity = "0";
+
       setTimeout(() => {
         question.style.display = "none";
         success.style.display = "block";
